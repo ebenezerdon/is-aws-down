@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>isAWSback - Simple AWS outage checker</title>
+  <meta name="description" content="isAWSback checks AWS Health and simply answers Yes or No if AWS is down.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <link rel="stylesheet" href="styles/main.css">
+  <style type="text/tailwindcss" data-teda="tailwind-apply">
+    @layer components {
+      .btn-primary { @apply inline-flex items-center justify-center whitespace-nowrap bg-teal-600 text-white px-5 py-3 rounded-full font-semibold tracking-wide shadow-md shadow-teal-600/20 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-300 active:scale-[0.98] transition; }
+      .btn-secondary { @apply inline-flex items-center justify-center whitespace-nowrap bg-white text-teal-700 border border-teal-200 px-4 py-2 rounded-full font-medium hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-teal-200 transition; }
+      .chip { @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium tracking-wide; }
+      .chip-muted { @apply bg-gray-100 text-gray-600; }
+      .link-muted { @apply text-teal-700 hover:text-teal-800 underline decoration-teal-300 underline-offset-4; }
+    }
+  </style>
+</head>
+<body class="bg-base pattern-grid antialiased text-slate-800">
+  <header class="px-6 pt-6 md:px-10 md:pt-8">
+    <nav class="max-w-6xl mx-auto flex items-center justify-between">
+      <a href="#top" class="flex items-center gap-2" aria-label="isAWSback home">
+        <span class="h-9 w-9 rounded-xl bg-teal-600 text-white grid place-items-center font-black shadow-md shadow-teal-600/30">is</span>
+        <span class="sr-only">isAWSback</span>
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="app.html" class="btn-secondary">Open checker</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="relative min-h-[86vh] flex items-center justify-center px-6 pb-20 pt-10 md:px-10">
+      <div aria-hidden="true" class="absolute inset-0 pointer-events-none select-none">
+        <div class="absolute -top-20 right-10 h-56 w-56 rounded-full bg-teal-200/40 blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 h-48 w-48 rounded-full bg-orange-200/40 blur-3xl"></div>
+      </div>
+
+      <div class="hero-card max-w-2xl w-full mx-auto relative">
+        <div class="p-7 md:p-10">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="chip chip-muted">Ultra-simple</span>
+            <span class="chip chip-muted">No clutter</span>
+            <span class="chip chip-muted">Privacy first</span>
+          </div>
+          <h1 class="text-4xl md:text-6xl font-black tracking-tight leading-[1.05] text-slate-900">
+            Is AWS down? Get a bold Yes or No.
+          </h1>
+          <p class="mt-4 md:mt-5 text-lg md:text-xl text-slate-600 leading-relaxed">
+            isAWSback checks the official AWS Health status and gives you a single, definitive answer without noise. Perfect for incident response, on-call, and quick sanity checks.
+          </p>
+          <div class="mt-7 md:mt-8 flex items-center gap-3">
+            <a href="app.html" class="btn-primary" aria-label="Open the checker to see if AWS is down">Open the checker</a>
+            <a href="#how" class="btn-secondary">How it works</a>
+          </div>
+          <div class="mt-6 text-sm text-slate-500">
+            Built with care. No logins. No tracking.
+          </div>
+        </div>
+        <div class="px-7 md:px-10 pb-7 md:pb-10">
+          <div class="rounded-xl bg-slate-50 border border-slate-200 p-4 md:p-6">
+            <p class="text-slate-600 text-sm md:text-base">
+              Tip: Add a shortcut to your mobile home screen. One tap to know if AWS is back.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" class="px-6 md:px-10 pb-24">
+      <div class="max-w-6xl mx-auto">
+        <div class="mb-10">
+          <h2 class="text-2xl md:text-3xl font-bold text-slate-900">Thoughtfully simple</h2>
+        </div>
+        <div class="space-y-8">
+          <article class="feature-row">
+            <div class="feature-card">
+              <h3 class="feature-title">One job, done right</h3>
+              <p class="feature-text">We check the official AWS Health public status and convert it into a clean Yes or No. That is it.</p>
+            </div>
+            <div class="feature-card smaller">
+              <h3 class="feature-title">No accounts</h3>
+              <p class="feature-text">No sign-ups, no cookies for tracking. Your last check is saved locally for convenience.</p>
+            </div>
+          </article>
+          <article class="feature-row reverse">
+            <div class="feature-card accent">
+              <h3 class="feature-title">Fast and reliable</h3>
+              <p class="feature-text">We use a CORS-friendly mirror to read the AWS Health page safely from your browser and handle errors gracefully.</p>
+            </div>
+            <div class="feature-card">
+              <h3 class="feature-title">Built for on-call</h3>
+              <p class="feature-text">Big, accessible answer. Clear colors. Touch-friendly controls that do not get in the way.</p>
+            </div>
+          </article>
+          <div class="pt-4">
+            <a class="btn-primary" href="app.html">Open the checker</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-6 md:px-10 pb-16">
+      <div class="max-w-6xl mx-auto rounded-2xl border border-slate-200 bg-white p-6 md:p-8 flex items-center justify-between gap-6 callout">
+        <div>
+          <h3 class="text-xl md:text-2xl font-semibold text-slate-900">Built by humans who obsess over UX</h3>
+          <p class="text-slate-600 mt-1">Open-source friendly and crafted for clarity. If you like it, share it with your team.</p>
+        </div>
+        <a href="app.html" class="btn-secondary">Check now</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="px-6 md:px-10 pb-12">
+    <div class="max-w-6xl mx-auto text-slate-500 text-sm">
+      <p>Made with care. View AWS official status at <a class="link-muted" href="https://health.aws.amazon.com/health/status" target="_blank" rel="noopener">health.aws.amazon.com</a>.</p>
+    </div>
+  </footer>
+  <script src="scripts/helpers.js"></script>
+  <script src="scripts/ui.js"></script>
+  <script src="scripts/main.js"></script>
+</body>
+</html>
