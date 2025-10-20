@@ -5,6 +5,9 @@
 
   App.state = { result: null };
 
+  App.config = { refreshMs: 60000 };
+  App.timers = { interval: null };
+
   App.init = function(){
     // Load last result from storage if any
     try { App.state.result = App.Storage.load(); } catch(e) { App.state.result = null; }
@@ -28,6 +31,10 @@
     }
     // Always perform a fresh check on load
     App.runCheck(false);
+
+    // Start auto-refresh and request notification permission
+    App.startAutoRefresh();
+    App.requestNotifyPermissionOnce();
   };
 
   App.setChecking = function(isChecking){
@@ -83,14 +90,22 @@
   };
 
   App.runCheck = function(userTriggered){
+
     App.setChecking(true);
+    var prevDown = (App.state && App.state.result) ? App.state.result.down : undefined;
     return App.Checker.checkNow().then(function(res){
       App.state.result = res;
       App.updateUI(res);
       App.flashCard();
+      if (typeof prevDown !== 'undefined' && prevDown !== res.down) {
+        App.notifyChange(prevDown, res.down, res);
+      }
+      return res;
     }).catch(function(err){
       console.error('Check failed', err);
-      App.updateUI({ down: null, timestamp: Date.now(), source: 'error', error: 'Check failed' });
+      var fallback = { down: null, timestamp: Date.now(), source: 'error', error: 'Check failed' };
+      App.updateUI(fallback);
+      return fallback;
     });
   };
 
@@ -135,6 +150,46 @@
     $t.stop(true,true).fadeIn(120).delay(1200).fadeOut(350);
   };
 
+
+  // Auto-refresh helpers
+  App.startAutoRefresh = function(){
+    try {
+      if (App.timers && App.timers.interval) { clearInterval(App.timers.interval); }
+      App.timers = App.timers || {};
+      var ms = (App.config && App.config.refreshMs) || 60000;
+      App.timers.interval = setInterval(function(){ App.runCheck(false); }, ms);
+    } catch(e){}
+  };
+  App.stopAutoRefresh = function(){
+    try { if (App.timers && App.timers.interval) { clearInterval(App.timers.interval); App.timers.interval = null; } } catch(e){}
+  };
+
+  // Notification helpers
+  App.requestNotifyPermissionOnce = function(){
+    try {
+      if (!('Notification' in window)) return;
+      var askedKey = 'isawsback:notify-asked';
+      if (localStorage.getItem(askedKey)) return;
+      localStorage.setItem(askedKey, '1');
+      if (Notification.permission === 'default') {
+        Notification.requestPermission().catch(function(){});
+      }
+    } catch(e){}
+  };
+
+  App.notifyChange = function(prevDown, nextDown, result){
+    try {
+      var prevWord = prevDown === true ? 'Yes' : (prevDown === false ? 'No' : 'Unknown');
+      var nextWord = nextDown === true ? 'Yes' : (nextDown === false ? 'No' : 'Unknown');
+      var message = 'AWS status changed: ' + nextWord + ' (was ' + prevWord + ').';
+      App.toast(message);
+      if ('vibrate' in navigator) { try { navigator.vibrate([120,60,120]); } catch(e){} }
+      if ('Notification' in window && Notification.permission === 'granted') {
+        try { new Notification('isAWSback', { body: message }); } catch(e){}
+      }
+      try { document.title = nextWord + ' • isAWSback'; } catch(e){}
+    } catch(e){}
+  };
   App.simplifySourceLabel = function(src){
     if (!src) return 'n/a';
     if (String(src).indexOf('r.jina.ai') >= 0) return 'Mirror';
